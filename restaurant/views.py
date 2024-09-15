@@ -1,5 +1,25 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Menu, Booking
+from .serialize import MenuSerializer, BookingSerializer
 
 # Create your views here.
-def index(request):
-    return render(request, 'index.html', {})
+class MenuView(APIView):
+    def get(self, request):
+        items = Menu.objects.all()
+        serialize_items = MenuSerializer(items, many=True)
+        return Response(serialize_items.data, status.HTTP_200_OK)
+ 
+    def post(self, request):
+        serialize_items = MenuSerializer(data=request.data)
+        if serialize_items.is_valid():
+            serialize_items.save()
+        return Response(serialize_items.data, status.HTTP_201_CREATED)
+    
+class SingleMenuView(APIView):
+    def get(self, request, pk):
+        items = get_object_or_404(Menu, pk=pk)
+        serialize_items = MenuView(items)
+        return Response(serialize_items.data, status.HTTP_200_OK)
