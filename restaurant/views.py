@@ -26,6 +26,18 @@ class SingleMenuView(APIView):
         serialize_items = MenuView(items)
         return Response(serialize_items.data, status.HTTP_200_OK)
     
+    def put(self, request, pk):
+        items = get_object_or_404(Menu, pk=pk)
+        serialize_items = MenuSerializer(items, data=request.data)
+        if serialize_items.is_valid(raise_exception=True):
+            serialize_items.save()
+        return Response(serialize_items.data, status.HTTP_200_OK)
+    
+    def delete(self, request, pk):
+        items = get_object_or_404(Menu, pk=pk)
+        items.delete()
+        return Response({'Message': 'Successfully deleted'}, status.HTTP_404_NOT_FOUND)
+    
 class BookingView(APIView):
     def get(self, request):
         items = Booking.objects.all()
@@ -37,3 +49,29 @@ class BookingView(APIView):
          if serialize_items.is_valid(raise_exception=True):
              serialize_items.save()
          return Response(serialize_items.data, status.HTTP_201_CREATED)
+    
+    def put(self, request, pk):
+        items = get_object_or_404(Booking, pk=pk)
+        serialize_items = BookingSerializer(items, data=request.data)
+        if serialize_items.is_valid(raise_exception=True):
+            serialize_items.save()
+        return Response(serialize_items.data, status.HTTP_200_OK)
+
+
+class SingleBookingView(APIView):
+    def get(self, request, pk):
+        items = get_object_or_404(Booking, pk=pk)
+        serialize_items = BookingSerializer(items)
+        return Response(serialize_items.data, status.HTTP_200_OK)
+    
+    def put(self, request, pk):
+        items = get_object_or_404(Booking, pk=pk)
+        serialize_items = BookingSerializer(items, data=request.data)
+        if serialize_items.is_valid(raise_exception=True):
+            serialize_items.save()
+        return Response(serialize_items.data, status.HTTP_200_OK)
+
+@permission_classes([IsAuthenticated])
+class MessageView(APIView):
+     def get(self, request):
+         return Response({'Message': 'hidden Messsage'})
